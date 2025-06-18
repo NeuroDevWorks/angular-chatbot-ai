@@ -367,6 +367,10 @@ export class AppComponent implements OnInit, OnDestroy {
   currentMessage: string = '';
   isLoading: boolean = false;
 
+  // AI Configuration
+  temperature: number = 0.7;
+  maxTokens: number = 1000;
+
 
 
   packages = {
@@ -515,17 +519,23 @@ export class AppComponent implements OnInit, OnDestroy {
     this.messages.push(aiMessage);
 
     try {
+      console.log('Sending message:', messageText);
+      console.log('API Key valid:', this.hasValidApiKey);
+      console.log('AI Client initialized:', this.aiClientService.isInitialized);
+
       // Use real AI service
       if (this.aiClientService.isInitialized) {
         // Try streaming first, fallback to regular message if streaming not available
         if (this.aiClientService.sendStreamingMessage) {
+          console.log('Using streaming...');
           await this.aiClientService.sendStreamingMessage(messageText, {
-            temperature: 0.7,
-            maxTokens: 1000
+            temperature: this.temperature,
+            maxTokens: this.maxTokens
           });
 
           // Subscribe to token stream for real-time updates
           const tokenSub = this.aiClientService.tokenStream$.subscribe(token => {
+            console.log('Received token:', token);
             const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
             if (messageIndex !== -1) {
               this.messages[messageIndex].text += token;
@@ -535,6 +545,7 @@ export class AppComponent implements OnInit, OnDestroy {
 
           // Subscribe to completion
           const completeSub = this.aiClientService.responseComplete$.subscribe(completeText => {
+            console.log('Response complete:', completeText);
             const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
             if (messageIndex !== -1) {
               this.messages[messageIndex].text = completeText;
@@ -542,13 +553,27 @@ export class AppComponent implements OnInit, OnDestroy {
             this.isLoading = false;
           });
           this.subscriptions.push(completeSub);
+
+          // Add timeout to prevent infinite loading
+          setTimeout(() => {
+            if (this.isLoading) {
+              console.log('Timeout reached, stopping loading...');
+              this.isLoading = false;
+              const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
+              if (messageIndex !== -1 && !this.messages[messageIndex].text) {
+                this.messages[messageIndex].text = 'Request timed out. Please check your API key and try again.';
+              }
+            }
+          }, 30000); // 30 second timeout
         } else {
+          console.log('Using regular sendMessage...');
           // Use regular sendMessage if streaming not available
           const response = await this.aiClientService.sendMessage(messageText, {
-            temperature: 0.7,
-            maxTokens: 1000
+            temperature: this.temperature,
+            maxTokens: this.maxTokens
           });
 
+          console.log('Received response:', response);
           const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
           if (messageIndex !== -1) {
             this.messages[messageIndex].text = response;
@@ -556,6 +581,7 @@ export class AppComponent implements OnInit, OnDestroy {
           this.isLoading = false;
         }
       } else {
+        console.log('AI client not initialized, using fallback...');
         // Fallback if AI client not initialized
         const response = await this.getAIResponse(messageText);
         const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
@@ -568,10 +594,15 @@ export class AppComponent implements OnInit, OnDestroy {
       console.error('AI Service Error:', error);
       const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
       if (messageIndex !== -1) {
-        this.messages[messageIndex].text = 'Sorry, I encountered an error. Please check your API key and try again.';
+        this.messages[messageIndex].text = `Error: ${error instanceof Error ? error.message : 'Unknown error occurred'}. Please check your API key and try again.`;
       }
       this.isLoading = false;
     }
+
+    // Scroll to bottom
+    setTimeout(() => {
+      this.scrollToBottom();
+    }, 100);
   }
 
   private async getAIResponse(message: string): Promise<string> {
@@ -603,6 +634,16 @@ export class AppComponent implements OnInit, OnDestroy {
     if (this.aiClientService.isInitialized) {
       this.aiClientService.clearMessages();
     }
+  }
+
+  scrollToBottom(): void {
+    // Scroll to bottom of messages area
+    setTimeout(() => {
+      const messagesArea = document.querySelector('[style*="height: 400px"]');
+      if (messagesArea) {
+        messagesArea.scrollTop = messagesArea.scrollHeight;
+      }
+    }, 100);
   }
 
   setConversationMode(mode: string): void {
