@@ -411,6 +411,12 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscriptions.forEach(sub => sub.unsubscribe());
   }
 
+  private clearCurrentSubscriptions() {
+    // Unsubscribe from current AI response subscriptions
+    this.subscriptions.forEach(sub => sub.unsubscribe());
+    this.subscriptions = [];
+  }
+
   get currentPackage() {
     return this.packages[this.activeTab as keyof typeof this.packages] || this.packages.chatbot;
   }
@@ -496,6 +502,9 @@ export class AppComponent implements OnInit, OnDestroy {
       return;
     }
 
+    // Clear any existing subscriptions before starting new request
+    this.clearCurrentSubscriptions();
+
     const userMessage = {
       id: Date.now(),
       text: this.currentMessage,
@@ -534,23 +543,39 @@ export class AppComponent implements OnInit, OnDestroy {
           });
 
           // Subscribe to token stream for real-time updates
-          const tokenSub = this.aiClientService.tokenStream$.subscribe(token => {
-            console.log('Received token:', token);
-            const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
-            if (messageIndex !== -1) {
-              this.messages[messageIndex].text += token;
+          const tokenSub = this.aiClientService.tokenStream$.subscribe({
+            next: (token) => {
+              console.log('Received token:', token);
+              const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
+              if (messageIndex !== -1) {
+                this.messages[messageIndex].text += token;
+              }
+            },
+            error: (error) => {
+              console.error('Token stream error:', error);
+              this.isLoading = false;
             }
           });
           this.subscriptions.push(tokenSub);
 
           // Subscribe to completion
-          const completeSub = this.aiClientService.responseComplete$.subscribe(completeText => {
-            console.log('Response complete:', completeText);
-            const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
-            if (messageIndex !== -1) {
-              this.messages[messageIndex].text = completeText;
+          const completeSub = this.aiClientService.responseComplete$.subscribe({
+            next: (completeText) => {
+              console.log('Response complete:', completeText);
+              const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
+              if (messageIndex !== -1) {
+                this.messages[messageIndex].text = completeText;
+              }
+              this.isLoading = false;
+
+              // Clear subscriptions after completion
+              this.clearCurrentSubscriptions();
+            },
+            error: (error) => {
+              console.error('Response complete error:', error);
+              this.isLoading = false;
+              this.clearCurrentSubscriptions();
             }
-            this.isLoading = false;
           });
           this.subscriptions.push(completeSub);
 

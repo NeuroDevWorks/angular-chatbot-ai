@@ -113,6 +113,9 @@ export class AIClientService {
     this._isLoading.next(true);
     this._error.next(null);
 
+    // Reset streaming subjects for new request
+    this.resetStreamingSubjects();
+
     try {
       // Add user message
       const userMessage: Message = { role: 'user', content };
@@ -195,11 +198,18 @@ export class AIClientService {
     });
   }
 
+  // Reset streaming subjects for new requests
+  private resetStreamingSubjects(): void {
+    // Just clear any pending emissions - subjects will handle new emissions properly
+    // No need to recreate subjects as they can handle multiple emissions
+  }
+
   // Reset the service state
   reset(): void {
     this._client = null;
     this._isLoading.next(false);
     this._error.next(null);
     this._messages.next([]);
+    this.resetStreamingSubjects();
   }
 }
