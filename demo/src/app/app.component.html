@@ -1,0 +1,146 @@
+<div class="container">
+  <!-- Header -->
+  <header class="header">
+    <h1>🤖 AngularAI Demo</h1>
+    <p class="subtitle">AI-Powered Angular Components</p>
+  </header>
+
+  <!-- API Key Setup -->
+  <section class="api-section">
+    <div class="card">
+      <h2>🔑 API Key Setup</h2>
+      <p>Enter your OpenAI API key to test the components</p>
+
+      <div class="input-group">
+        <label for="apiKey">OpenAI API Key:</label>
+        <input
+          id="apiKey"
+          type="password"
+          [(ngModel)]="apiKey"
+          (input)="updateApiKey()"
+          placeholder="sk-..."
+          class="api-input">
+      </div>
+
+      <div class="status" [class.valid]="hasValidApiKey" [class.invalid]="!hasValidApiKey">
+        {{ hasValidApiKey ? '✅ Valid API key' : '❌ Please enter a valid OpenAI API key' }}
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Tabs -->
+  <section class="demo-section">
+    <div class="tabs">
+      <button
+        *ngFor="let tab of tabs; let i = index"
+        (click)="setActiveTab(i.toString())"
+        [class.active]="activeTab === i.toString()"
+        class="tab-button">
+        {{ tab.icon }} {{ tab.name }}
+      </button>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content">
+      <!-- Overview Tab -->
+      <div *ngIf="activeTab === '0'" class="tab-panel">
+        <h3>📦 AngularAI Packages</h3>
+        <div class="packages-grid">
+          <div class="package-card" *ngFor="let pkg of packages | keyvalue">
+            <h4>{{ pkg.value.name }}</h4>
+            <p>{{ pkg.value.description }}</p>
+            <div class="features">
+              <span class="feature" *ngFor="let feature of pkg.value.features">
+                {{ feature.icon }} {{ feature.text }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chatbot Tab -->
+      <div *ngIf="activeTab === '1'" class="tab-panel">
+        <h3>💬 AI Chatbot Component</h3>
+        <p>{{ getWelcomeDescription('chatbot') }}</p>
+
+        <div *ngIf="hasValidApiKey" class="demo-area">
+          <div class="placeholder">
+            <h4>🤖 Chatbot Component</h4>
+            <p>The AI chatbot would appear here with config:</p>
+            <pre>{{ chatConfig | json }}</pre>
+          </div>
+        </div>
+
+        <div *ngIf="!hasValidApiKey" class="api-required">
+          <p>🔑 Please enter a valid OpenAI API key above to test the chatbot component.</p>
+        </div>
+      </div>
+
+      <!-- Other tabs... -->
+      <div *ngIf="activeTab === '2'" class="tab-panel">
+        <h3>✨ AI Autosuggest Component</h3>
+        <p>{{ getWelcomeDescription('autosuggest') }}</p>
+
+        <div *ngIf="hasValidApiKey" class="demo-area">
+          <div class="placeholder">
+            <h4>✨ Autosuggest Component</h4>
+            <p>AI-powered suggestions would appear here</p>
+          </div>
+        </div>
+
+        <div *ngIf="!hasValidApiKey" class="api-required">
+          <p>🔑 Please enter a valid OpenAI API key above to test the autosuggest component.</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === '3'" class="tab-panel">
+        <h3>📝 AI Smart Form Component</h3>
+        <p>{{ getWelcomeDescription('smartform') }}</p>
+
+        <div *ngIf="hasValidApiKey" class="demo-area">
+          <div class="placeholder">
+            <h4>📝 Smart Form Component</h4>
+            <p>AI-powered form validation would appear here</p>
+          </div>
+        </div>
+
+        <div *ngIf="!hasValidApiKey" class="api-required">
+          <p>🔑 Please enter a valid OpenAI API key above to test the smart form component.</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === '4'" class="tab-panel">
+        <h3>🖼️ AI Image Caption Component</h3>
+        <p>{{ getWelcomeDescription('image-caption') }}</p>
+
+        <div *ngIf="hasValidApiKey" class="demo-area">
+          <div class="placeholder">
+            <h4>🖼️ Image Caption Component</h4>
+            <p>AI image analysis would appear here</p>
+          </div>
+        </div>
+
+        <div *ngIf="!hasValidApiKey" class="api-required">
+          <p>🔑 Please enter a valid OpenAI API key above to test the image caption component.</p>
+        </div>
+      </div>
+
+      <div *ngIf="activeTab === '5'" class="tab-panel">
+        <h3>📊 AI Analytics Component</h3>
+        <p>{{ getWelcomeDescription('analytics') }}</p>
+
+        <div class="demo-area">
+          <div class="placeholder">
+            <h4>📊 Analytics Dashboard</h4>
+            <p>Analytics dashboard would appear here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 Angular Chatbot AI. Built with ❤️ by Manoj Kumar</p>
+  </footer>
+</div>

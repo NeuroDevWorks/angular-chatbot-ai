@@ -1,0 +1,72 @@
+{
+  "name": "@neurodevworks/chatbot-core",
+  "version": "1.0.0",
+  "description": "Core AI chatbot functionality for Angular applications",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "npm run clean && ng-packagr -p ng-package.json",
+    "dev": "ng-packagr -p ng-package.json --watch",
+    "lint": "eslint \"src/**/*.ts\"",
+    "clean": "rm -rf dist",
+    "test": "ng test",
+    "test:watch": "ng test --watch",
+    "prepublishOnly": "npm run build",
+    "postbuild": "cp README.md dist/ && cp CHANGELOG.md dist/ 2>/dev/null || true"
+  },
+  "keywords": [
+    "angular",
+    "ai",
+    "chatbot",
+    "core",
+    "openai",
+    "claude",
+    "gemini",
+    "conversation",
+    "typescript"
+  ],
+  "author": "Manoj Kumar <manojkumar.smgr@gmail.com>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/NeuroDevWorks/angular-chatbot-ai.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/NeuroDevWorks/angular-chatbot-ai#readme",
+  "bugs": {
+    "url": "https://github.com/NeuroDevWorks/angular-chatbot-ai/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "peerDependencies": {
+    "@angular/core": "^18.0.0",
+    "@angular/common": "^18.0.0",
+    "rxjs": "^7.8.0"
+  },
+  "devDependencies": {
+    "@angular/core": "^18.0.0",
+    "@angular/common": "^18.0.0",
+    "@types/node": "^20.16.0",
+    "eslint": "^8.56.0",
+    "ng-packagr": "^18.0.0",
+    "rxjs": "^7.8.0",
+    "typescript": "~5.5.4"
+  },
+  "dependencies": {
+    "eventsource-parser": "^1.1.1"
+  }
+}

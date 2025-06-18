@@ -1,0 +1,264 @@
+<!-- Modern Chatbot Demo Interface -->
+<div class="chatbot-demo-app">
+  <!-- Header -->
+  <header class="demo-header">
+    <div class="container">
+      <div class="header-content">
+        <div class="logo-section">
+          <h1>🤖 Angular Chatbot AI</h1>
+          <span class="version">v1.0.0</span>
+        </div>
+        <nav class="nav-links">
+          <a href="https://github.com/neurodevworks/angular-chatbot-ai" target="_blank">
+            <i class="icon-github"></i> GitHub
+          </a>
+          <a href="https://www.npmjs.com/package/@neurodevworks/angular-chatbot" target="_blank">
+            <i class="icon-npm"></i> NPM
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="container">
+      <div class="hero-content">
+        <h2>Next-Generation Conversational AI</h2>
+        <p>Build intelligent chatbots with advanced Angular components. Support for multiple AI providers, voice interaction, and modern UI designs.</p>
+        <div class="hero-stats">
+          <div class="stat">
+            <span class="stat-number">4+</span>
+            <span class="stat-label">AI Providers</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">5</span>
+            <span class="stat-label">UI Themes</span>
+          </div>
+          <div class="stat">
+            <span class="stat-number">100%</span>
+            <span class="stat-label">TypeScript</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Configuration Panel -->
+  <section class="config-section">
+    <div class="container">
+      <div class="config-panel">
+        <h3>🔧 Configuration</h3>
+        
+        <!-- API Key Setup -->
+        <div class="config-group">
+          <label for="apiKey">API Key</label>
+          <div class="input-group">
+            <input 
+              id="apiKey"
+              type="password" 
+              [(ngModel)]="apiKey" 
+              (input)="updateApiKey()"
+              placeholder="Enter your OpenAI API key (sk-...)"
+              class="api-input">
+            <span class="status-indicator" [class.valid]="hasValidApiKey" [class.invalid]="!hasValidApiKey">
+              {{ hasValidApiKey ? '✅' : '❌' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Conversation Mode -->
+        <div class="config-group">
+          <label>Conversation Mode</label>
+          <div class="mode-selector">
+            <button 
+              *ngFor="let mode of conversationModes | keyvalue"
+              (click)="setConversationMode(mode.key)"
+              [class.active]="conversationMode === mode.key"
+              class="mode-btn">
+              {{ mode.value.icon }} {{ mode.value.name }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Theme Selection -->
+        <div class="config-group">
+          <label>Theme</label>
+          <div class="theme-selector">
+            <button (click)="changeTheme('modern')" [class.active]="chatOptions.theme === 'modern'" class="theme-btn modern">Modern</button>
+            <button (click)="changeTheme('gradient')" [class.active]="chatOptions.theme === 'gradient'" class="theme-btn gradient">Gradient</button>
+            <button (click)="changeTheme('dark')" [class.active]="chatOptions.theme === 'dark'" class="theme-btn dark">Dark</button>
+            <button (click)="changeTheme('corporate')" [class.active]="chatOptions.theme === 'corporate'" class="theme-btn corporate">Corporate</button>
+          </div>
+        </div>
+
+        <!-- Feature Toggles -->
+        <div class="config-group">
+          <label>Features</label>
+          <div class="feature-toggles">
+            <button (click)="toggleVoice()" [class.active]="enableVoice" class="toggle-btn">
+              🔊 Voice {{ enableVoice ? 'ON' : 'OFF' }}
+            </button>
+            <button (click)="toggleFileUpload()" [class.active]="enableFileUpload" class="toggle-btn">
+              📎 Files {{ enableFileUpload ? 'ON' : 'OFF' }}
+            </button>
+            <button (click)="toggleTypingIndicator()" [class.active]="showTypingIndicator" class="toggle-btn">
+              ⌨️ Typing {{ showTypingIndicator ? 'ON' : 'OFF' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Main Demo Section -->
+  <section class="demo-section">
+    <div class="container">
+      <div class="demo-layout">
+        
+        <!-- Chatbot Demo -->
+        <div class="chatbot-container">
+          <div class="demo-header">
+            <h3>💬 Interactive Chatbot Demo</h3>
+            <p>{{ getWelcomeDescription('chatbot') }}</p>
+          </div>
+          
+          <div *ngIf="!hasValidApiKey" class="api-required">
+            <div class="placeholder-card">
+              <div class="placeholder-icon">🔑</div>
+              <h4>API Key Required</h4>
+              <p>Please enter a valid OpenAI API key in the configuration panel above to start chatting with the AI assistant.</p>
+              <div class="placeholder-features">
+                <span class="feature-tag">🧠 Multi-AI Support</span>
+                <span class="feature-tag">💬 Real-time Chat</span>
+                <span class="feature-tag">🎨 Custom Themes</span>
+                <span class="feature-tag">🔊 Voice Input</span>
+              </div>
+            </div>
+          </div>
+
+          <div *ngIf="hasValidApiKey" class="chatbot-demo">
+            <ai-chatbot
+              [config]="chatConfig"
+              [options]="chatOptions">
+            </ai-chatbot>
+          </div>
+        </div>
+
+        <!-- Features Sidebar -->
+        <div class="features-sidebar">
+          <div class="feature-card">
+            <h4>🚀 Key Features</h4>
+            <ul class="feature-list">
+              <li *ngFor="let feature of packages.chatbot.features">
+                {{ feature.icon }} {{ feature.text }}
+              </li>
+            </ul>
+          </div>
+
+          <div class="feature-card">
+            <h4>🔌 AI Providers</h4>
+            <div class="provider-list">
+              <div class="provider-item">
+                <span class="provider-icon">🤖</span>
+                <span class="provider-name">OpenAI GPT</span>
+              </div>
+              <div class="provider-item">
+                <span class="provider-icon">🧠</span>
+                <span class="provider-name">Claude</span>
+              </div>
+              <div class="provider-item">
+                <span class="provider-icon">✨</span>
+                <span class="provider-name">Gemini</span>
+              </div>
+              <div class="provider-item">
+                <span class="provider-icon">🏠</span>
+                <span class="provider-name">Ollama</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="feature-card">
+            <h4>📊 Technical Specs</h4>
+            <div class="spec-list">
+              <div class="spec-item">
+                <span class="spec-label">Framework:</span>
+                <span class="spec-value">Angular 16+</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Language:</span>
+                <span class="spec-value">TypeScript</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">Bundle Size:</span>
+                <span class="spec-value">~45KB gzipped</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-label">License:</span>
+                <span class="spec-value">MIT</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Installation Section -->
+  <section class="installation-section">
+    <div class="container">
+      <div class="installation-content">
+        <h3>🚀 Quick Installation</h3>
+        <div class="install-steps">
+          <div class="install-step">
+            <div class="step-number">1</div>
+            <div class="step-content">
+              <h4>Install Packages</h4>
+              <code>npm install @neurodevworks/chatbot-core @neurodevworks/angular-chatbot</code>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="step-number">2</div>
+            <div class="step-content">
+              <h4>Import Component</h4>
+              <code>import {{ '{' }} ChatbotComponent {{ '}' }} from '@neurodevworks/angular-chatbot';</code>
+            </div>
+          </div>
+          <div class="install-step">
+            <div class="step-number">3</div>
+            <div class="step-content">
+              <h4>Use in Template</h4>
+              <code>&lt;ai-chatbot [config]="config" [options]="options"&gt;&lt;/ai-chatbot&gt;</code>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="demo-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>Angular Chatbot AI</h4>
+          <p>Next-generation conversational AI components for Angular applications.</p>
+        </div>
+        <div class="footer-section">
+          <h4>Links</h4>
+          <a href="https://github.com/neurodevworks/angular-chatbot-ai">GitHub</a>
+          <a href="https://www.npmjs.com/package/@neurodevworks/angular-chatbot">NPM</a>
+          <a href="https://github.com/neurodevworks/angular-chatbot-ai/issues">Issues</a>
+        </div>
+        <div class="footer-section">
+          <h4>Packages</h4>
+          <a href="https://www.npmjs.com/package/@neurodevworks/chatbot-core">@neurodevworks/chatbot-core</a>
+          <a href="https://www.npmjs.com/package/@neurodevworks/angular-chatbot">@neurodevworks/angular-chatbot</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Angular Chatbot AI. Built with ❤️ by <a href="https://github.com/neurodevworks">Manoj Kumar</a></p>
+      </div>
+    </div>
+  </footer>
+</div>

@@ -1,0 +1,101 @@
+<!-- Simple HTML template without Material components for testing -->
+<div class="app-container">
+  <!-- Header -->
+  <header class="app-header">
+    <h1>🤖 Angular Chatbot AI Demo</h1>
+    <span class="version-badge">v1.0.0</span>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="container">
+      <h2>Next-Generation Conversational AI</h2>
+      <p>Advanced chatbot components for intelligent Angular applications.</p>
+    </div>
+  </section>
+
+  <!-- API Key Setup -->
+  <section class="api-setup">
+    <div class="container">
+      <div class="api-card">
+        <h3>🔑 API Key Setup</h3>
+        <p>Enter your OpenAI API key to test the components</p>
+        
+        <div class="api-input-group">
+          <label for="apiKey">OpenAI API Key:</label>
+          <input 
+            id="apiKey"
+            type="password" 
+            [(ngModel)]="apiKey" 
+            (input)="updateApiKey()"
+            placeholder="sk-..."
+            class="api-input">
+          <span class="api-status" [class.valid]="hasValidApiKey" [class.invalid]="!hasValidApiKey">
+            {{ hasValidApiKey ? '✅ Valid API key' : '❌ Please enter a valid OpenAI API key' }}
+          </span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Demo Tabs -->
+  <section class="demo-section">
+    <div class="container">
+      <div class="tab-navigation">
+        <button 
+          *ngFor="let tab of tabs; let i = index"
+          (click)="setActiveTab(i.toString())"
+          [class.active]="activeTab === i.toString()"
+          class="tab-button">
+          {{ tab.label }}
+        </button>
+      </div>
+
+      <!-- Overview Tab -->
+      <div class="tab-content" *ngIf="activeTab === '0'">
+        <h3>📦 Angular Chatbot AI Packages</h3>
+        <div class="packages-grid">
+          <div class="package-card" *ngFor="let pkg of packages | keyvalue">
+            <h4>{{ pkg.value.name }}</h4>
+            <p>{{ pkg.value.description }}</p>
+            <div class="package-features">
+              <span class="feature-tag" *ngFor="let feature of pkg.value.features">
+                {{ feature.icon }} {{ feature.text }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Chatbot Tab -->
+      <div class="tab-content" *ngIf="activeTab === '1'">
+        <h3>💬 AI Chatbot Component</h3>
+        <p>{{ getWelcomeDescription('chatbot') }}</p>
+        
+        <div class="chat-demo" *ngIf="hasValidApiKey">
+          <ai-chatbot
+            [config]="chatConfig"
+            [options]="chatOptions">
+          </ai-chatbot>
+        </div>
+        
+        <div class="api-required" *ngIf="!hasValidApiKey">
+          <div class="placeholder-card">
+            <h4>🔑 API Key Required</h4>
+            <p>Please enter a valid OpenAI API key above to test the chatbot component.</p>
+          </div>
+        </div>
+      </div>
+
+
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <p>&copy; 2024 Angular Chatbot AI. Built with ❤️ by Manoj Kumar</p>
+    </div>
+  </footer>
+</div>

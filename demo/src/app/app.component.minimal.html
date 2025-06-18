@@ -1,0 +1,54 @@
+<!-- Minimal HTML template for testing -->
+<div class="app-container">
+  <header>
+    <h1>🤖 AngularAI Demo</h1>
+    <p>Testing basic Angular functionality</p>
+  </header>
+
+  <main>
+    <section>
+      <h2>API Key Setup</h2>
+      <div>
+        <label for="apiKey">OpenAI API Key:</label>
+        <input 
+          id="apiKey"
+          type="password" 
+          [(ngModel)]="apiKey" 
+          (input)="updateApiKey()"
+          placeholder="sk-..."
+          style="margin: 10px; padding: 5px; width: 300px;">
+        <div style="margin: 10px;">
+          Status: {{ hasValidApiKey ? '✅ Valid API key' : '❌ Please enter a valid OpenAI API key' }}
+        </div>
+      </div>
+    </section>
+
+    <section style="margin-top: 20px;">
+      <h2>Component Test</h2>
+      <div *ngIf="hasValidApiKey">
+        <p>✅ API key is valid! AngularAI components would load here.</p>
+        <div style="border: 1px solid #ccc; padding: 20px; margin: 10px;">
+          <h3>Chatbot Component Placeholder</h3>
+          <p>The AI chatbot would appear here with config:</p>
+          <pre>{{ chatConfig | json }}</pre>
+        </div>
+      </div>
+      
+      <div *ngIf="!hasValidApiKey">
+        <p>❌ Please enter a valid API key to test components.</p>
+      </div>
+    </section>
+
+    <section style="margin-top: 20px;">
+      <h2>Features Test</h2>
+      <div *ngFor="let feature of features" style="border: 1px solid #eee; margin: 5px; padding: 10px;">
+        <strong>{{ feature.icon }} {{ feature.title }}</strong>
+        <p>{{ feature.description }}</p>
+      </div>
+    </section>
+  </main>
+
+  <footer style="margin-top: 40px; padding: 20px; background: #f5f5f5;">
+    <p>&copy; 2024 AngularAI Demo - Basic Test</p>
+  </footer>
+</div>
