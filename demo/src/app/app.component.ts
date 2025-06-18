@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Subscription } from 'rxjs';
@@ -268,7 +268,10 @@ interface ChatOptions {
 export class AppComponent implements OnInit, OnDestroy {
   private subscriptions: Subscription[] = [];
 
-  constructor(private aiClientService: AIClientService) {}
+  constructor(
+    private aiClientService: AIClientService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   title = 'Angular Chatbot AI Demo';
   activeTab = '0';
@@ -548,12 +551,16 @@ export class AppComponent implements OnInit, OnDestroy {
               console.log('Received token:', token);
               const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
               if (messageIndex !== -1) {
+                // Create a new array to trigger change detection
+                this.messages = [...this.messages];
                 this.messages[messageIndex].text += token;
+                this.cdr.detectChanges(); // Force change detection
               }
             },
             error: (error) => {
               console.error('Token stream error:', error);
               this.isLoading = false;
+              this.cdr.detectChanges();
             }
           });
           this.subscriptions.push(tokenSub);
@@ -564,9 +571,14 @@ export class AppComponent implements OnInit, OnDestroy {
               console.log('Response complete:', completeText);
               const messageIndex = this.messages.findIndex(m => m.id === aiMessageId);
               if (messageIndex !== -1) {
+                // Create a new array to trigger change detection
+                this.messages = [...this.messages];
                 this.messages[messageIndex].text = completeText;
+                console.log('Updated message at index', messageIndex, 'with text:', completeText);
+                this.cdr.detectChanges(); // Force change detection
               }
               this.isLoading = false;
+              this.cdr.detectChanges();
 
               // Clear subscriptions after completion
               this.clearCurrentSubscriptions();
@@ -574,6 +586,7 @@ export class AppComponent implements OnInit, OnDestroy {
             error: (error) => {
               console.error('Response complete error:', error);
               this.isLoading = false;
+              this.cdr.detectChanges();
               this.clearCurrentSubscriptions();
             }
           });
